@@ -17,7 +17,7 @@ class Pagination(BaseModel, Generic[DataT]):
     pagination: PaginationMeta
 
     @classmethod
-    def total_pages(cls, totalElements: int, pageSize: int) -> int:
+    def totalPages(cls, totalElements: int, pageSize: int) -> int:
         # Calculate total pages and use ceil to round up
         return ceil(totalElements / pageSize)
 
@@ -33,6 +33,24 @@ class Pagination(BaseModel, Generic[DataT]):
             page=page,
             pageSize=pageSize,
             totalElements=totalElements,
-            total_pages=cls.total_pages(totalElements, pageSize),
+            totalPages=cls.totalPages(totalElements, pageSize),
         )
         return cls(data=data, pagination=pagination)
+
+    class ConfigDict:
+        json_schema_extra = {
+            "example": {
+                "data": [
+                    {
+                        "id": 1,
+                        "email": "example@example.com",
+                    }
+                ],
+                "pagination": {
+                    "page": 1,
+                    "pageSize": 10,
+                    "totalElements": 1,
+                    "totalPages": 1,
+                },
+            }
+        }

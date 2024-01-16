@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.routes import employer_route
 import os
+
 
 # Create a FastAPI app
 app = FastAPI(title="Recruitment Service", version="0.0.1")
@@ -21,4 +23,4 @@ async def root():
 
 
 # Include routers from the routes module
-# app.include_router(user_route.router)
+app.include_router(employer_route.router)

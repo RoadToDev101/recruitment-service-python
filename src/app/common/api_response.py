@@ -1,12 +1,15 @@
 from pydantic import BaseModel, Field
 from typing import Generic, TypeVar, Optional
 from fastapi import status
+from .error_code import ErrorCode
 
 DataT = TypeVar("DataT")
 
 
 class ApiResponse(BaseModel, Generic[DataT]):
-    errorCode: Optional[int] = Field(0, description="Error code, 0 means no error")
+    errorCode: Optional[ErrorCode] = Field(
+        ErrorCode.SUCCESS, description="Error code, 0 means no error"
+    )
     statusCode: Optional[int] = Field(
         status.HTTP_200_OK, description="HTTP status code"
     )
@@ -14,25 +17,24 @@ class ApiResponse(BaseModel, Generic[DataT]):
     object: Optional[DataT] = Field(None, description="Response data")
 
     @classmethod
-    def success_with_message(cls, message: str, object: DataT = None):
+    def success_message_only(cls, message: str):
         return cls(
-            errorCode=0,
+            errorCode=ErrorCode.SUCCESS,
             statusCode=status.HTTP_200_OK,
             message=message,
-            object=object,
+            object={},
         )
 
     @classmethod
-    def success_without_message(cls, object: DataT = None):
+    def success_with_object(cls, object: DataT):
         return cls(
-            errorCode=0,
+            errorCode=ErrorCode.SUCCESS,
             statusCode=status.HTTP_200_OK,
-            message=None,
             object=object,
         )
 
     @classmethod
-    def error(cls, errorCode: int, statusCode: int, message: str):
+    def error(cls, errorCode: ErrorCode, statusCode: int, message: str):
         return cls(
             errorCode=errorCode,
             statusCode=statusCode,
