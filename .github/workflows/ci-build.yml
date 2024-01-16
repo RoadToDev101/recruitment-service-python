@@ -4,11 +4,11 @@ on:
   push:
     branches: ["main"]
     paths:
-      - source/app/**
+      - src/app/**
   pull_request:
     branches: ["main"]
     paths:
-      - source/app/**
+      - src/app/**
 
 jobs:
   build:
@@ -64,7 +64,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r source/requirements.txt
+          pip install -r src/requirements.txt
       # - name: Lint with flake8
       #   run: |
       #     pip install flake8
@@ -90,6 +90,6 @@ jobs:
       #     pytest
 
       - name: Start FastAPI server
-        working-directory: source
+        working-directory: src
         run: |
           python start.py
