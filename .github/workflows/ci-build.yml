@@ -90,6 +90,10 @@ jobs:
       #     pytest
 
       - name: Start FastAPI server
+        working-directory: src
+        run: |
+          printenv
+          python start.py
         env:
           ENV: "development"
           PORT: "8000"
@@ -98,6 +102,3 @@ jobs:
           MYSQL_USER: "root"
           MYSQL_PASSWORD: "Admin@123"
           MYSQL_DATABASE: "sample_db"
-        working-directory: src
-        run: |
-          python start.py
