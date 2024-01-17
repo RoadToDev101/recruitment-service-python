@@ -72,22 +72,26 @@ jobs:
       #     flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
       #     # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
       #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      # - name: Run Tests
-      #   env:
-      #     DATASOURCE_URL: "jdbc:mysql://127.0.0.1:3306/sample_db"
-      #     DATASOURCE_USERNAME: "root"
-      #     DATASOURCE_PASSWORD: "Admin@123"
-      #     REDIS_HOST: "127.0.0.1"
-      #     REDIS_PORT: "6379"
-      #     REDIS_PASSWORD: "Redis@123"
-      #     MONGODB_HOST: "127.0.0.1"
-      #     MONGODB_PORT: "27017"
-      #     MONGODB_USERNAME: "user"
-      #     MONGODB_PASSWORD: "User123"
-      #     MONGODB_DATABASE: "sample_db"
-      #   working-directory: source
-      #   run: |
-      #     pytest
+      - name: Run Tests
+        env:
+          ENV: "development"
+          PORT: "8000"
+          MYSQL_HOST: "localhost"
+          MYSQL_PORT: "3306"
+          MYSQL_USER: "root"
+          MYSQL_PASSWORD: "Admin@123"
+          MYSQL_DATABASE: "sample_db"
+          REDIS_HOST: "127.0.0.1"
+          REDIS_PORT: "6379"
+          REDIS_PASSWORD: "Redis@123"
+          MONGODB_HOST: "127.0.0.1"
+          MONGODB_PORT: "27017"
+          MONGODB_USERNAME: "user"
+          MONGODB_PASSWORD: "User123"
+          MONGODB_DATABASE: "sample_db"
+        working-directory: src
+        run: |
+          pytest
 
       - name: Start FastAPI server
         working-directory: src
