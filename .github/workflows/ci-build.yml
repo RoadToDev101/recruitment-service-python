@@ -37,7 +37,7 @@ jobs:
         ports:
           - 27017:27017
         options: >-
-          --health-cmd="mongosh mongodb://localhost:27017 --eval \"db.runCommand({ ping: 1 })\"" 
+          --health-cmd="mongosh mongodb://localhost:27017 --eval \"db.runCommand({ ping: 1 })\""
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
@@ -72,7 +72,7 @@ jobs:
       #     flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
       #     # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
       #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Run Tests
+      - name: Test with pytest
         env:
           ENV: "development"
           PORT: "8000"
@@ -92,17 +92,3 @@ jobs:
         working-directory: src
         run: |
           pytest
-
-      - name: Start FastAPI server
-        working-directory: src
-        run: |
-          printenv
-          python start.py
-        env:
-          ENV: "development"
-          PORT: "8000"
-          MYSQL_HOST: "localhost"
-          MYSQL_PORT: "3306"
-          MYSQL_USER: "root"
-          MYSQL_PASSWORD: "Admin@123"
-          MYSQL_DATABASE: "sample_db"
