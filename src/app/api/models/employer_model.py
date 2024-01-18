@@ -5,6 +5,7 @@ from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 
 
+# MODEL
 class Employer(Base):
     __tablename__ = "employer"
 
@@ -16,10 +17,13 @@ class Employer(Base):
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
-    # jobs = relationship("Job", back_populates="employer", cascade="all, delete-orphan")
+    jobs_data = relationship(
+        "Job", back_populates="employer_data", cascade="all, delete-orphan"
+    )
     province_data = relationship("Province", back_populates="employers")
 
 
+# SCHEMA
 class EmployerBase(BaseModel):
     name: str
     provinceId: int

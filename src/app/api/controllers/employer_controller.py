@@ -7,7 +7,11 @@ from app.api.models.employer_model import (
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from app.api.models.province_model import Province as ProvinceModel
-from app.common.custom_exception import NotFoundException, BadRequestException
+from app.common.custom_exception import (
+    NotFoundException,
+    BadRequestException,
+    ValidationException,
+)
 from app.utils.utils import remove_private_attributes
 from app.common.pagination import Pagination
 
@@ -43,9 +47,11 @@ class EmployerController:
         except IntegrityError:
             raise BadRequestException("Employer already exists")
         except SQLAlchemyError as e:
-            raise BadRequestException(f"Error creating employer. Error: {e}")
-        except Exception as e:
-            raise BadRequestException(f"Error creating employer. Error: {e}")
+            raise BadRequestException(
+                f"Database error while creating employer. Error: {e}"
+            )
+        except ValidationException as e:
+            raise BadRequestException(f"Error validating employer data. Error: {e}")
 
         return "Employer created successfully"
 
@@ -59,10 +65,15 @@ class EmployerController:
                 )  # Use the relationship name
                 .get(employer_id)
             )
+        except SQLAlchemyError as e:
+            raise BadRequestException(
+                f"Database error while getting employer. Error: {e}"
+            )
 
-            if not db_employer:
-                raise NotFoundException(detail="Employer not found")
+        if not db_employer:
+            raise NotFoundException(detail="Employer not found")
 
+        try:
             employer_dict = remove_private_attributes(db_employer)
             employer_dict["provinceId"] = (
                 db_employer.province_data.id if db_employer.province_data else None
@@ -71,8 +82,8 @@ class EmployerController:
                 db_employer.province_data.name if db_employer.province_data else None
             )
             employer_out = EmployerOut.model_validate(employer_dict)
-        except Exception as e:
-            raise BadRequestException(f"Error getting employer, Error: {e}")
+        except ValidationException as e:
+            raise BadRequestException(f"Error validating employer data. Error: {e}")
 
         return employer_out
 
@@ -98,8 +109,12 @@ class EmployerController:
             result = Pagination[EmployerOut].create(
                 employers_out, skip, limit, total_employers
             )
-        except Exception as e:
-            raise BadRequestException(f"Error getting employers. Error: {e}")
+        except SQLAlchemyError as e:
+            raise BadRequestException(
+                f"Database error while getting employers. Error: {e}"
+            )
+        except ValidationException as e:
+            raise BadRequestException(f"Error validating employer data. Error: {e}")
 
         return result
 
@@ -119,10 +134,14 @@ class EmployerController:
 
             db.commit()
             db.refresh(db_employer)
+        except IntegrityError:
+            raise BadRequestException("Employer already exists")
         except SQLAlchemyError as e:
-            raise BadRequestException(f"Error updating employer. Error: {e}")
-        except Exception as e:
-            raise BadRequestException(f"Error updating employer. Error: {e}")
+            raise BadRequestException(
+                f"Database error while updating employer. Error: {e}"
+            )
+        except ValidationException as e:
+            raise BadRequestException(f"Error validating employer data. Error: {e}")
 
         return "Employer updated successfully"
 
@@ -138,8 +157,8 @@ class EmployerController:
         try:
             db.commit()
         except SQLAlchemyError as e:
-            raise BadRequestException(f"Error deleting employer. Error: {e}")
-        except Exception as e:
-            raise BadRequestException(f"Error deleting employer. Error: {e}")
+            raise BadRequestException(
+                f"Database error while deleting employer. Error: {e}"
+            )
 
         return "Employer deleted successfully"

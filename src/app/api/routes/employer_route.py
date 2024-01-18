@@ -40,7 +40,7 @@ async def update_employer(
     status_code=status.HTTP_200_OK,
     response_model=ApiResponse[Pagination[EmployerOut]],
 )
-async def get_employers(
+async def get_all_employers(
     page: int = Query(1, ge=1),
     pageSize: int = Query(10, ge=1, le=500),
     db=Depends(get_db),
@@ -54,7 +54,7 @@ async def get_employers(
     status_code=status.HTTP_200_OK,
     response_model=ApiResponse[EmployerOut],
 )
-async def get_employer_by_id(employer_id: int, db=Depends(get_db)):
+async def get_employer_by_employer_id(employer_id: int, db=Depends(get_db)):
     employer = EmployerController.get_employer_by_id(db, employer_id)
     return ApiResponse[EmployerOut].success_with_object(object=employer)
 
