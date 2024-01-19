@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import employer_route
+from app.api.routes import employer_route, job_route
 import os
 
 
@@ -24,3 +24,4 @@ async def root():
 
 # Include routers from the routes module
 app.include_router(employer_route.router)
+app.include_router(job_route.router)

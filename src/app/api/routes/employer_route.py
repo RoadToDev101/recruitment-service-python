@@ -25,7 +25,7 @@ async def create_employer(employer: EmployerCreate, db=Depends(get_db)):
 @router.patch(
     "/{employer_id}",
     status_code=status.HTTP_200_OK,
-    response_model=ApiResponse,
+    response_model=ApiResponse[EmployerOut],
 )
 async def update_employer(
     employer_id: int, employer: EmployerUpdate, db=Depends(get_db)
