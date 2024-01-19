@@ -13,7 +13,7 @@ from app.common.custom_exception import (
     NotFoundException,
     ValidationException,
 )
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError
 from unittest.mock import call
 
 

@@ -17,6 +17,8 @@ class Employer(Base):
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
+    from .job_model import Job
+
     jobs_data = relationship(
         "Job", back_populates="employer_data", cascade="all, delete-orphan"
     )
