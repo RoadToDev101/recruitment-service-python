@@ -10,5 +10,6 @@ class Province(Base):
     name = Column(String, nullable=False, unique=True)
 
     employers = relationship("Employer", back_populates="province_data")
+    seekers = relationship("Seeker", back_populates="province_data")
 
     # jobs = relationship("Job", back_populates="province", cascade="all, delete-orphan")

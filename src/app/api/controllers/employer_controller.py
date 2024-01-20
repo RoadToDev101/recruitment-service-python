@@ -41,7 +41,6 @@ class EmployerController:
             )
 
             db.add(new_employer)
-
             db.commit()
             db.refresh(new_employer)
         except IntegrityError:
@@ -152,9 +151,8 @@ class EmployerController:
         if not db_employer:
             raise NotFoundException(detail="Employer not found")
 
-        db.delete(db_employer)
-
         try:
+            db.delete(db_employer)
             db.commit()
         except SQLAlchemyError as e:
             raise BadRequestException(
