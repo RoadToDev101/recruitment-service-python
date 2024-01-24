@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from app.api.models.job_model import Job as JobModel, JobCreate, JobUpdate, JobOut
+from sqlalchemy.exc import SQLAlchemyError
+from app.api.models.job_model import Job as JobModel
+from app.api.schemas.job_schema import JobCreate, JobOut, JobUpdate
 from app.api.models.employer_model import Employer as EmployerModel
 from app.api.models.job_field_model import JobField as JobFieldModel
 from app.api.models.province_model import Province as ProvinceModel
@@ -14,7 +15,6 @@ from app.utils.utils import (
     remove_private_attributes,
     extract_ids,
     format_str_ids,
-    object_as_dict,
 )
 
 
@@ -29,7 +29,6 @@ class JobController:
         db_fields = (
             db.query(JobFieldModel).filter(JobFieldModel.id.in_(job.fieldIds)).all()
         )
-        # print(db_fields)
 
         if not db_fields:
             raise NotFoundException(detail="Field not found")
@@ -60,7 +59,7 @@ class JobController:
         except SQLAlchemyError as e:
             raise BadRequestException(f"Database error while creating job. Error: {e}")
         except ValidationException as e:
-            raise BadRequestException(f"Error validating job data. Error: {e}")
+            raise ValidationException(f"Error validating job data. Error: {e}")
 
         return "Job created successfully"
 
@@ -73,9 +72,8 @@ class JobController:
                 raise NotFoundException(detail="Job not found")
 
             job_dict = remove_private_attributes(db_job)
-            # print(job_dict)
+
             employer = db.query(EmployerModel).get(job_dict["employer_id"])
-            # print(employer)
             if employer:
                 job_dict["employerId"] = employer.id
                 job_dict["employerName"] = employer.name
@@ -96,9 +94,6 @@ class JobController:
                 .all()
             )
 
-            # print(db_job_fields)
-            # print(db_job_provinces)
-
             job_fields_dict = [
                 remove_private_attributes(field) for field in db_job_fields
             ]
@@ -108,11 +103,6 @@ class JobController:
 
             job_dict["fields"] = job_fields_dict
             job_dict["provinces"] = job_provinces_dict
-
-            # job_dict["fields"] = [object_as_dict(field) for field in job_dict["fields"]]
-            # job_dict["provinces"] = [
-            #     object_as_dict(province) for province in job_dict["provinces"]
-            # ]
 
             job_out = JobOut.model_validate(job_dict)
 
@@ -167,45 +157,43 @@ class JobController:
         except SQLAlchemyError as e:
             raise BadRequestException(f"Database error while getting jobs. Error: {e}")
         except ValidationException as e:
-            raise BadRequestException(f"Error validating job data. Error: {e}")
+            raise ValidationException(f"Error validating job data. Error: {e}")
 
         return result
 
     @staticmethod
     def update_job_by_id(db: Session, job_id: int, job: JobUpdate) -> str:
+        db_job = db.query(JobModel).get(job_id)
+
+        if not db_job:
+            raise NotFoundException(detail="Job not found")
+
+        job_dict = remove_private_attributes(db_job)
+
+        db_employer = db.query(EmployerModel).get(job_dict["employer_id"])
+
+        if not db_employer:
+            raise NotFoundException(detail="Employer not found")
+
+        job_field_db_ids = extract_ids(db_job.fields)
+        job_province_db_ids = extract_ids(db_job.provinces)
+
+        db_job_fields = (
+            db.query(JobFieldModel).filter(JobFieldModel.id.in_(job_field_db_ids)).all()
+        )
+        db_job_provinces = (
+            db.query(ProvinceModel)
+            .filter(ProvinceModel.id.in_(job_province_db_ids))
+            .all()
+        )
+
+        if not db_job_fields:
+            raise NotFoundException(detail="Field not found")
+
+        if not db_job_provinces:
+            raise NotFoundException(detail="Province not found")
+
         try:
-            db_job = db.query(JobModel).get(job_id)
-
-            if not db_job:
-                raise NotFoundException(detail="Job not found")
-
-            job_dict = remove_private_attributes(db_job)
-
-            db_employer = db.query(EmployerModel).get(job_dict["employer_id"])
-
-            if not db_employer:
-                raise NotFoundException(detail="Employer not found")
-
-            job_field_db_ids = extract_ids(db_job.fields)
-            job_province_db_ids = extract_ids(db_job.provinces)
-
-            db_job_fields = (
-                db.query(JobFieldModel)
-                .filter(JobFieldModel.id.in_(job_field_db_ids))
-                .all()
-            )
-            db_job_provinces = (
-                db.query(ProvinceModel)
-                .filter(ProvinceModel.id.in_(job_province_db_ids))
-                .all()
-            )
-
-            if not db_job_fields:
-                raise NotFoundException(detail="Field not found")
-
-            if not db_job_provinces:
-                raise NotFoundException(detail="Province not found")
-
             db_job.title = job.title
             db_job.quantity = job.quantity
             db_job.description = job.description
@@ -218,7 +206,7 @@ class JobController:
         except SQLAlchemyError as e:
             raise BadRequestException(f"Database error while updating job. Error: {e}")
         except ValidationException as e:
-            raise BadRequestException(f"Error validating job data. Error: {e}")
+            raise ValidationException(f"Error validating job data. Error: {e}")
 
         return "Job updated successfully"
 
@@ -229,9 +217,8 @@ class JobController:
         if not db_job:
             raise NotFoundException(detail="Job not found")
 
-        db.delete(db_job)
-
         try:
+            db.delete(db_job)
             db.commit()
         except SQLAlchemyError as e:
             raise BadRequestException(f"Database error while deleting job. Error: {e}")

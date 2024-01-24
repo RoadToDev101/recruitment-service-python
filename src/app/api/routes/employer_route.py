@@ -1,6 +1,10 @@
 from fastapi import APIRouter, Depends, status, Query
 from app.api.controllers.employer_controller import EmployerController
-from app.api.models.employer_model import EmployerCreate, EmployerOut, EmployerUpdate
+from app.api.schemas.employer_schema import (
+    EmployerCreate,
+    EmployerUpdate,
+    EmployerOut,
+)
 from app.common.api_response import ApiResponse
 from app.common.pagination import Pagination
 from app.dependencies import get_db

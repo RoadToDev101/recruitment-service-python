@@ -1,8 +1,10 @@
 from app.api.models.employer_model import (
+    Employer as EmployerModel,
+)
+from app.api.schemas.employer_schema import (
     EmployerCreate,
     EmployerUpdate,
     EmployerOut,
-    Employer as EmployerModel,
 )
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError

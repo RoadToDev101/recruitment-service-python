@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status, Query
 from app.api.controllers.seeker_controller import SeekerController
-from app.api.models.seeker_model import SeekerCreate, SeekerOut, SeekerUpdate
+from app.api.schemas.seeker_schema import SeekerCreate, SeekerOut, SeekerUpdate
 from app.common.api_response import ApiResponse
 from app.common.pagination import Pagination
 from app.dependencies import get_db

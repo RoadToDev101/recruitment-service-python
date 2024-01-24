@@ -9,6 +9,8 @@ class Province(Base):
     id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     name = Column(String, nullable=False, unique=True)
 
+    from app.api.models.seeker_model import Seeker
+
     employers = relationship("Employer", back_populates="province_data")
     seekers = relationship("Seeker", back_populates="province_data")
 

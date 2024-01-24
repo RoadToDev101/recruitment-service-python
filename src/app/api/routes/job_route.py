@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status, Query
 from app.api.controllers.job_controller import JobController
-from app.api.models.job_model import JobCreate, JobOut, JobUpdate
+from app.api.schemas.job_schema import JobCreate, JobOut, JobUpdate
 from app.common.api_response import ApiResponse
 from app.common.pagination import Pagination
 from app.dependencies import get_db

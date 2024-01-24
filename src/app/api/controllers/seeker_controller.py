@@ -1,9 +1,5 @@
-from app.api.models.seeker_model import (
-    Seeker as SeekerModel,
-    SeekerCreate,
-    SeekerUpdate,
-    SeekerOut,
-)
+from app.api.models.seeker_model import Seeker as SeekerModel
+from app.api.schemas.seeker_schema import SeekerCreate, SeekerOut, SeekerUpdate
 from app.api.models.province_model import Province as ProvinceModel
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
