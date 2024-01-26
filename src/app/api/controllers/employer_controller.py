@@ -1,11 +1,7 @@
 from app.api.models.employer_model import (
     Employer as EmployerModel,
 )
-from app.api.schemas.employer_schema import (
-    EmployerCreate,
-    EmployerUpdate,
-    EmployerOut,
-)
+from app.api.schemas.employer_schema import EmployerCreate, EmployerUpdate, EmployerOut
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from app.api.models.province_model import Province as ProvinceModel
