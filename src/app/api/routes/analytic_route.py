@@ -40,10 +40,8 @@ async def get_overall_statistic(
 )
 async def get_suitable_seekers(
     job_id: int = Query(..., gt=0),
-    page: int = Query(1, gt=0),
-    pageSize: int = Query(10, gt=0),
     db=Depends(get_db),
 ):
     return ApiResponse[SuitableSeekers].success_with_object(
-        object=AnalyticController.find_suitable_seekers(db, job_id, page, pageSize)
+        object=AnalyticController.find_suitable_seekers(db, job_id)
     )

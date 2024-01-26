@@ -8,6 +8,7 @@ from app.api.routes import (
     analytic_route,
 )
 import os
+from app.middleware.error_handling_middleware import exception_handling_middleware
 
 
 # Create a FastAPI app
@@ -23,9 +24,8 @@ app.add_middleware(
 )
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+# Set up error handling middleware
+app.middleware("http")(exception_handling_middleware)
 
 
 # Include routers from the routes module

@@ -84,9 +84,7 @@ class AnalyticController:
         return overall_statistic
 
     @staticmethod
-    def find_suitable_seekers(
-        db: Session, job_id: int, page: int, pageSize: int
-    ) -> SuitableSeekers:
+    def find_suitable_seekers(db: Session, job_id: int) -> SuitableSeekers:
         try:
             db_job = db.query(JobModel).get(job_id)
         except SQLAlchemyError as e:
@@ -95,83 +93,97 @@ class AnalyticController:
         if not db_job:
             raise NotFoundException(detail="Job not found")
 
-        # Get all fields and provinces of the job
-        job_field_db_ids = extract_ids(db_job.fields)
-        job_province_db_ids = extract_ids(db_job.provinces)
+        try:
+            # Get all fields and provinces of the job
+            job_field_db_ids = extract_ids(db_job.fields)
+            job_province_db_ids = extract_ids(db_job.provinces)
 
-        db_job_fields = (
-            db.query(JobFieldModel).filter(JobFieldModel.id.in_(job_field_db_ids)).all()
-        )
-        db_job_provinces = (
-            db.query(ProvinceModel)
-            .filter(ProvinceModel.id.in_(job_province_db_ids))
-            .all()
-        )
-
-        job_fields_dict = [remove_private_attributes(field) for field in db_job_fields]
-        job_provinces_dict = [
-            remove_private_attributes(province) for province in db_job_provinces
-        ]
-
-        # The list is arranged in descending order of expiredAt of the job.
-
-        # Seekers will match jobs if the seeker has a resume that meets the following conditions:
-        # 1.Resume whose salary is less than or equal to the salary of the job
-        # 2.The resume has 1 field located in the Job's fields
-        # 3.The resume has 1 province located in the provinces of the job
-
-        # Query resumes that meet the salary condition
-        resumes = (
-            db.query(ResumeModel)
-            .filter(
-                ResumeModel.salary <= db_job.salary,
+            db_job_fields = (
+                db.query(JobFieldModel)
+                .filter(JobFieldModel.id.in_(job_field_db_ids))
+                .all()
             )
-            .all()
-        )
-
-        # Filter resumes that meet the fields and provinces conditions
-        filtered_resumes = [
-            resume
-            for resume in resumes
-            if any(
-                field_id in extract_ids(resume.fields) for field_id in job_field_db_ids
+            db_job_provinces = (
+                db.query(ProvinceModel)
+                .filter(ProvinceModel.id.in_(job_province_db_ids))
+                .all()
             )
-            and any(
-                province_id in extract_ids(resume.provinces)
-                for province_id in job_province_db_ids
+
+            job_fields_dict = [
+                remove_private_attributes(field) for field in db_job_fields
+            ]
+            job_provinces_dict = [
+                remove_private_attributes(province) for province in db_job_provinces
+            ]
+
+            # The list is arranged in descending order of expiredAt of the job.
+
+            # Seekers will match jobs if the seeker has a resume that meets the following conditions:
+            # 1.Resume whose salary is less than or equal to the salary of the job
+            # 2.The resume has 1 field located in the Job's fields
+            # 3.The resume has 1 province located in the provinces of the job
+
+            # Query resumes that meet the salary condition
+            resumes = (
+                db.query(ResumeModel)
+                .filter(
+                    ResumeModel.salary <= db_job.salary,
+                )
+                .all()
             )
-        ]
 
-        # print(filtered_resumes)
+            # Filter resumes that meet the fields and provinces conditions
+            filtered_resumes = [
+                resume
+                for resume in resumes
+                if any(
+                    field_id in extract_ids(resume.fields)
+                    for field_id in job_field_db_ids
+                )
+                and any(
+                    province_id in extract_ids(resume.provinces)
+                    for province_id in job_province_db_ids
+                )
+            ]
 
-        # Get all seekers from the resumes
-        seeker_ids = [resume.seeker_id for resume in filtered_resumes]
+            # print(filtered_resumes)
 
-        # Remove duplicate seekers
-        seeker_ids = list(set(seeker_ids))
-        # Find Seekers
-        seekers_out = db.query(SeekerModel).filter(SeekerModel.id.in_(seeker_ids)).all()
+            # Get all seekers from the resumes
+            seeker_ids = [resume.seeker_id for resume in filtered_resumes]
 
-        seekers = []
-        for seeker in seekers_out:
-            seeker_dict = remove_private_attributes(seeker)
-            seeker_dict["provinceId"] = (
-                seeker.province_data.id if seeker.province_data else None
+            # Remove duplicate seekers
+            seeker_ids = list(set(seeker_ids))
+            # Find Seekers
+            seekers_out = (
+                db.query(SeekerModel).filter(SeekerModel.id.in_(seeker_ids)).all()
             )
-            seeker_dict["provinceName"] = (
-                seeker.province_data.name if seeker.province_data else None
-            )
-            seeker_out = SeekerOut.model_validate(seeker_dict)
-            seekers.append(seeker_out)
 
-        job_dict = remove_private_attributes(db_job)
-        employer = db.query(EmployerModel).get(job_dict["employer_id"])
-        if employer:
-            job_dict["employerId"] = employer.id
-            job_dict["employerName"] = employer.name
-        job_dict["seekers"] = seekers
-        job_dict["fields"] = job_fields_dict
-        job_dict["provinces"] = job_provinces_dict
-        suitable_seekers = SuitableSeekers.model_validate(job_dict)
+            seekers = []
+            for seeker in seekers_out:
+                seeker_dict = remove_private_attributes(seeker)
+                seeker_dict["provinceId"] = (
+                    seeker.province_data.id if seeker.province_data else None
+                )
+                seeker_dict["provinceName"] = (
+                    seeker.province_data.name if seeker.province_data else None
+                )
+                seeker_out = SeekerOut.model_validate(seeker_dict)
+                seekers.append(seeker_out)
+
+            job_dict = remove_private_attributes(db_job)
+            employer = db.query(EmployerModel).get(job_dict["employer_id"])
+            if employer:
+                job_dict["employerId"] = employer.id
+                job_dict["employerName"] = employer.name
+            job_dict["seekers"] = seekers
+            job_dict["fields"] = job_fields_dict
+            job_dict["provinces"] = job_provinces_dict
+            suitable_seekers = SuitableSeekers.model_validate(job_dict)
+        except SQLAlchemyError as e:
+            raise BadRequestException(
+                f"Database error while getting suitable seekers. Error: {e}"
+            )
+        except ValidationError as e:
+            raise ValidationException(f"Error validating suitable seekers. Error: {e}")
 
         return suitable_seekers
