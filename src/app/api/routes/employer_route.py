@@ -8,6 +8,8 @@ from app.api.schemas.employer_schema import (
 from app.common.api_response import ApiResponse
 from app.common.pagination import Pagination
 from app.dependencies import get_db
+from app.config.cache.redis import get_redis_cache, set_redis_cache
+import json
 
 router = APIRouter(
     prefix="/api/v1/employers",
@@ -49,7 +51,17 @@ async def get_all_employers(
     pageSize: int = Query(10, ge=1, le=500),
     db=Depends(get_db),
 ):
+    cache_key = f"employers_page_{page}_size_{pageSize}"
+    cached_employers = await get_redis_cache(cache_key)
+
+    if cached_employers is not None:
+        cached_employers = json.loads(cached_employers)
+        return ApiResponse[Pagination[EmployerOut]].success_with_object(
+            object=cached_employers
+        )
+
     employers = EmployerController.get_employers(db, page, pageSize)
+    await set_redis_cache(cache_key, employers.model_dump_json())
     return ApiResponse[Pagination[EmployerOut]].success_with_object(object=employers)
 
 
@@ -59,7 +71,15 @@ async def get_all_employers(
     response_model=ApiResponse[EmployerOut],
 )
 async def get_employer_by_employer_id(employer_id: int, db=Depends(get_db)):
+    cache_key = f"employer_{employer_id}"
+    cached_employee = await get_redis_cache(cache_key)
+
+    if cached_employee is not None:
+        cached_employee = json.loads(cached_employee)
+        return ApiResponse[EmployerOut].success_with_object(object=cached_employee)
+
     employer = EmployerController.get_employer_by_id(db, employer_id)
+    await set_redis_cache(cache_key, employer.model_dump_json())
     return ApiResponse[EmployerOut].success_with_object(object=employer)
 
 
