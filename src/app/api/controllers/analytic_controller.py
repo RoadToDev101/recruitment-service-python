@@ -146,8 +146,6 @@ class AnalyticController:
                 )
             ]
 
-            # print(filtered_resumes)
-
             # Get all seekers from the resumes
             seeker_ids = [resume.seeker_id for resume in filtered_resumes]
 

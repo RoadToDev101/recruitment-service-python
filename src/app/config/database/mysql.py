@@ -21,6 +21,10 @@ try:
         echo=os.getenv("ENV") == "Development",
     )
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    # Try to connect to the database
+    connection = engine.connect()
+    print(f"Connected to MySQL server on port {DATASOURCE_PORT}")
+    connection.close()
 except Exception as e:
     print("Error connecting to database: ", e)
     exit(1)

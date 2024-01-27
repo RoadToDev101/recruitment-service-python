@@ -87,7 +87,6 @@ class SeekerController:
                 seeker_dict["provinceName"] = (
                     seeker.province_data.name if seeker.province_data else None
                 )
-                print(seeker_dict)
                 seeker_out = SeekerOut.model_validate(seeker_dict)
                 seekers_out.append(seeker_out)
 

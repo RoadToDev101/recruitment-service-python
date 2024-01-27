@@ -1,7 +1,23 @@
 import redis
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Set up Redis client
-redis_client = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
+redis_client = redis.Redis(
+    host=os.getenv("REDIS_HOST"),
+    port=os.getenv("REDIS_PORT"),
+    db=0,
+    decode_responses=True,
+)
+
+# Check connection
+try:
+    if redis_client.ping():
+        print(f'Connected to Redis server on port {os.getenv("REDIS_PORT")}')
+except redis.ConnectionError:
+    print("Failed to connect to Redis server")
 
 
 async def get_redis_cache(key: str):

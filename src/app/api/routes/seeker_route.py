@@ -4,6 +4,8 @@ from app.api.schemas.seeker_schema import SeekerCreate, SeekerOut, SeekerUpdate
 from app.common.api_response import ApiResponse
 from app.common.pagination import Pagination
 from app.dependencies import get_db
+from app.config.cache.redis import get_redis_cache, set_redis_cache
+import json
 
 router = APIRouter(
     prefix="/api/v1/seekers",
@@ -28,9 +30,16 @@ async def create_seeker(seeker: SeekerCreate, db=Depends(get_db)):
     response_model=ApiResponse[SeekerOut],
 )
 async def get_seeker_by_id(seeker_id: int, db=Depends(get_db)):
-    return ApiResponse.success_with_object(
-        object=SeekerController.get_seeker_by_id(db, seeker_id)
-    )
+    cache_key = f"seeker_{seeker_id}"
+    cached_seeker = await get_redis_cache(cache_key)
+
+    if cached_seeker is not None:
+        cached_seeker = json.loads(cached_seeker)
+        return ApiResponse[SeekerOut].success_with_object(object=cached_seeker)
+
+    seeker = SeekerController.get_seeker_by_id(db, seeker_id)
+    await set_redis_cache(cache_key, seeker.model_dump_json())
+    return ApiResponse[SeekerOut].success_with_object(object=seeker)
 
 
 @router.get(
@@ -43,9 +52,18 @@ async def get_seekers(
     pageSize: int = Query(10, ge=1, le=500),
     db=Depends(get_db),
 ):
-    return ApiResponse[Pagination[SeekerOut]].success_with_object(
-        object=SeekerController.get_seekers(db, page, pageSize)
-    )
+    cache_key = f"seekers_page_{page}_size_{pageSize}"
+    cached_seekers = await get_redis_cache(cache_key)
+
+    if cached_seekers is not None:
+        cached_seekers = json.loads(cached_seekers)
+        return ApiResponse[Pagination[SeekerOut]].success_with_object(
+            object=cached_seekers
+        )
+
+    seekers = SeekerController.get_seekers(db, page, pageSize)
+    await set_redis_cache(cache_key, seekers.model_dump_json())
+    return ApiResponse[Pagination[SeekerOut]].success_with_object(object=seekers)
 
 
 @router.patch(

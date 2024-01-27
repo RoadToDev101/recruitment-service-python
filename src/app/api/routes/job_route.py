@@ -4,6 +4,8 @@ from app.api.schemas.job_schema import JobCreate, JobOut, JobUpdate
 from app.common.api_response import ApiResponse
 from app.common.pagination import Pagination
 from app.dependencies import get_db
+from app.config.cache.redis import get_redis_cache, set_redis_cache
+import json
 
 router = APIRouter(
     prefix="/api/v1/jobs",
@@ -26,9 +28,16 @@ async def create_job(job: JobCreate, db=Depends(get_db)):
     response_model=ApiResponse[JobOut],
 )
 async def get_job_by_id(job_id: int, db=Depends(get_db)):
-    return ApiResponse.success_with_object(
-        object=JobController.get_job_by_id(db, job_id)
-    )
+    cache_key = f"job_{job_id}"
+    cached_job = await get_redis_cache(cache_key)
+
+    if cached_job is not None:
+        cached_job = json.loads(cached_job)
+        return ApiResponse[JobOut].success_with_object(object=cached_job)
+
+    job = JobController.get_job_by_id(db, job_id)
+    await set_redis_cache(cache_key, job.model_dump_json())
+    return ApiResponse[JobOut].success_with_object(object=job)
 
 
 @router.get(
@@ -41,9 +50,16 @@ async def get_jobs(
     limit: int = Query(10, ge=1),
     db=Depends(get_db),
 ):
-    return ApiResponse.success_with_object(
-        object=JobController.get_jobs(db, page, limit)
-    )
+    cache_key = f"jobs_page_{page}_limit_{limit}"
+    cached_jobs = await get_redis_cache(cache_key)
+
+    if cached_jobs is not None:
+        cached_jobs = json.loads(cached_jobs)
+        return ApiResponse[Pagination[JobOut]].success_with_object(object=cached_jobs)
+
+    jobs = JobController.get_jobs(db, page, limit)
+    await set_redis_cache(cache_key, jobs.model_dump_json())
+    return ApiResponse[Pagination[JobOut]].success_with_object(object=jobs)
 
 
 @router.patch(
