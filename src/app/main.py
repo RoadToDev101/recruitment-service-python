@@ -8,7 +8,7 @@ from app.api.routes import (
     analytic_route,
 )
 import os
-from app.middleware.error_handling_middleware import exception_handling_middleware
+from app.middleware.exception_handling_middleware import exception_handling_middleware
 
 
 # Create a FastAPI app
