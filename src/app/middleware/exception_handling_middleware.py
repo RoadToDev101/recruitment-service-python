@@ -1,60 +1,53 @@
-from fastapi import Request, HTTPException, status
+from fastapi import Request, status
 from fastapi.responses import JSONResponse
 import traceback
 import os
 from app.common.custom_exception import ApiException
-from app.common.api_response import ApiResponse  # Import ApiResponse
-from app.common.error_code import ErrorCode  # Import ErrorCode
+from app.common.api_response import ApiResponse
+from app.common.error_code import ErrorCode
 import json
+from app.config.logging.logger import logger
 
 # from sentry_sdk import capture_exception
 
 
-async def exception_handling_middleware(request: Request, call_next):
-    try:
-        response = await call_next(request)
-        return response
-    except ApiException as api_exc:
+async def api_exception_handler(request: Request, exc: ApiException):
+    if exc.response is None:
+        logger.error(f"ApiException: {exc.message}")
         return JSONResponse(
-            status_code=api_exc.response.statusCode,
-            content=json.loads(api_exc.response.model_dump_json()),
-        )
-    except HTTPException as http_exc:
-        # Capture specific HTTP exceptions
-        # capture_exception(http_exc)  # Sentry logging
-        return JSONResponse(
-            status_code=http_exc.status_code,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content=json.loads(
                 ApiResponse.error(
-                    errorCode=ErrorCode(
-                        http_exc.status_code
-                    ),  # Map status code to ErrorCode
-                    statusCode=http_exc.status_code,
-                    message=http_exc.detail,
-                ).model_dump_json()
-            ),
-        )
-    except Exception as e:
-        # Capture all other exceptions
-        # capture_exception(e)  # Sentry logging
-        if os.getenv("ENV") == "development":
-            trace = traceback.format_exc()
-            return JSONResponse(
-                content=ApiResponse.error(
-                    errorCode=ErrorCode.INTERNAL_ERR,
-                    statusCode=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    message="Internal Server Error"
-                    if os.getenv("ENV") != "development"
-                    else f"Internal Server Error: {trace}",
-                ).model_dump(),
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-        else:
-            return JSONResponse(
-                content=ApiResponse.error(
                     errorCode=ErrorCode.INTERNAL_ERR,
                     statusCode=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     message="Internal Server Error",
-                ).model_dump(),
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+                ).model_dump_json()
+            ),
+        )
+    else:
+        if 400 <= exc.response.statusCode < 500:
+            logger.debug(f"ApiException: {exc.response.message}", exc_info=True)
+        elif 500 <= exc.response.statusCode < 600:
+            logger.error(f"ApiException: {exc.response.message}", exc_info=True)
+        return JSONResponse(
+            status_code=exc.response.statusCode,
+            content=json.loads(exc.response.model_dump_json()),
+        )
+
+
+async def exception_handler(request: Request, e: Exception):
+    trace = traceback.format_exc()
+    if os.getenv("ENV") == "development":
+        logger.error(f"Exception: {e}\nTrace: {trace}")
+    else:
+        logger.error(f"Exception: {e}")
+    return JSONResponse(
+        content=json.loads(
+            ApiResponse.error(
+                errorCode=ErrorCode.INTERNAL_ERR,
+                statusCode=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                message="Internal Server Error",
+            ).model_dump_json()
+        ),
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    )

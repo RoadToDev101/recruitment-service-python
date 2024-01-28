@@ -8,7 +8,11 @@ from app.api.routes import (
     analytic_route,
 )
 import os
-from app.middleware.exception_handling_middleware import exception_handling_middleware
+from app.middleware.exception_handling_middleware import (
+    api_exception_handler,
+    exception_handler,
+)
+from app.common.custom_exception import ApiException
 
 
 # Create a FastAPI app
@@ -25,7 +29,8 @@ app.add_middleware(
 
 
 # Set up error handling middleware
-app.middleware("http")(exception_handling_middleware)
+app.exception_handler(ApiException)(api_exception_handler)
+app.exception_handler(Exception)(exception_handler)
 
 
 # Include routers from the routes module
