@@ -11,10 +11,13 @@ from fastapi import APIRouter, Depends, Query, status
 from datetime import date
 from app.config.cache.redis import get_redis_cache, set_redis_cache
 import json
+from app.dependencies import get_current_admin
+
 
 router = APIRouter(
     prefix="/api/v1/analytic",
     tags=["Analytic"],
+    dependencies=[Depends(get_current_admin)],
 )
 
 input_time_frame = InputTimeFrame(fromDate=date(2022, 1, 1), toDate=date(2022, 12, 31))

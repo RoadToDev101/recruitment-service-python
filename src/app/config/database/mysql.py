@@ -32,3 +32,7 @@ except Exception as e:
     exit(1)
 
 Base = declarative_base()
+
+from app.api.models.user_model import User
+
+Base.metadata.create_all(bind=engine)

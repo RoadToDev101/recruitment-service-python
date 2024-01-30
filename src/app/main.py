@@ -6,6 +6,8 @@ from app.api.routes import (
     seeker_route,
     resume_route,
     analytic_route,
+    user_route,
+    auth_route,
 )
 import os
 from app.middleware.exception_handling_middleware import (
@@ -39,3 +41,5 @@ app.include_router(job_route.router)
 app.include_router(seeker_route.router)
 app.include_router(resume_route.router)
 app.include_router(analytic_route.router)
+app.include_router(user_route.router)
+app.include_router(auth_route.router)

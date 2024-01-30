@@ -6,10 +6,12 @@ from app.common.pagination import Pagination
 from app.dependencies import get_db
 from app.config.cache.redis import get_redis_cache, set_redis_cache
 import json
+from app.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/api/v1/jobs",
     tags=["Jobs"],
+    dependencies=[Depends(get_current_user)],
 )
 
 

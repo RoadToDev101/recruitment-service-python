@@ -10,10 +10,13 @@ from app.common.pagination import Pagination
 from app.dependencies import get_db
 from app.config.cache.redis import get_redis_cache, set_redis_cache
 import json
+from sqlalchemy.orm import Session
+from app.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/api/v1/employers",
     tags=["Employers"],
+    dependencies=[Depends(get_current_user)],
 )
 
 
@@ -22,7 +25,10 @@ router = APIRouter(
     status_code=status.HTTP_201_CREATED,
     response_model=ApiResponse,
 )
-async def create_employer(employer: EmployerCreate, db=Depends(get_db)):
+async def create_employer(
+    employer: EmployerCreate,
+    db: Session = Depends(get_db),
+):
     return ApiResponse.success_message_only(
         message=EmployerController.create_employer(db, employer)
     )
@@ -34,7 +40,9 @@ async def create_employer(employer: EmployerCreate, db=Depends(get_db)):
     response_model=ApiResponse[EmployerOut],
 )
 async def update_employer(
-    employer_id: int, employer: EmployerUpdate, db=Depends(get_db)
+    employer_id: int,
+    employer: EmployerUpdate,
+    db: Session = Depends(get_db),
 ):
     return ApiResponse.success_message_only(
         message=EmployerController.update_employer_by_id(db, employer_id, employer)
@@ -49,7 +57,7 @@ async def update_employer(
 async def get_all_employers(
     page: int = Query(1, ge=1),
     pageSize: int = Query(10, ge=1, le=500),
-    db=Depends(get_db),
+    db: Session = Depends(get_db),
 ):
     cache_key = f"employers_page_{page}_size_{pageSize}"
     cached_employers = await get_redis_cache(cache_key)
@@ -70,7 +78,7 @@ async def get_all_employers(
     status_code=status.HTTP_200_OK,
     response_model=ApiResponse[EmployerOut],
 )
-async def get_employer_by_employer_id(employer_id: int, db=Depends(get_db)):
+async def get_employer_by_employer_id(employer_id: int, db: Session = Depends(get_db)):
     cache_key = f"employer_{employer_id}"
     cached_employee = await get_redis_cache(cache_key)
 
@@ -88,7 +96,7 @@ async def get_employer_by_employer_id(employer_id: int, db=Depends(get_db)):
     status_code=status.HTTP_200_OK,
     response_model=ApiResponse,
 )
-async def delete_employer_by_id(employer_id: int, db=Depends(get_db)):
+async def delete_employer_by_id(employer_id: int, db: Session = Depends(get_db)):
     return ApiResponse.success_message_only(
         message=EmployerController.delete_employer_by_id(db, employer_id)
     )

@@ -139,6 +139,8 @@ class EmployerController:
             )
         except ValidationException as e:
             raise BadRequestException(f"Error validating employer data. Error: {e}")
+        except Exception as e:
+            raise BadRequestException(f"Error updating employer. Error: {e}")
 
         return "Employer updated successfully"
 
@@ -156,5 +158,7 @@ class EmployerController:
             raise BadRequestException(
                 f"Database error while deleting employer. Error: {e}"
             )
+        except Exception as e:
+            raise BadRequestException(f"Error deleting employer. Error: {e}")
 
         return "Employer deleted successfully"
