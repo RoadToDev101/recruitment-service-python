@@ -9,3 +9,4 @@ passlib[bcrypt]
 python-dotenv
 httpx
 pytest
+python-json-logger

@@ -1,4 +1,4 @@
-from app.config.logging.logger import logger
+from app.config.logging.logging_config import g_logger
 import redis
 import os
 from dotenv import load_dotenv
@@ -16,9 +16,9 @@ redis_client = redis.Redis(
 # Check connection
 try:
     if redis_client.ping():
-        logger.info(f'Connected to Redis server on port {os.getenv("REDIS_PORT")}')
+        g_logger.info(f'Connected to Redis server on port {os.getenv("REDIS_PORT")}')
 except redis.ConnectionError:
-    logger.error("Error connecting to Redis server: ", exc_info=True)
+    g_logger.error("Error connecting to Redis server: ", exc_info=True)
     exit(1)
 
 

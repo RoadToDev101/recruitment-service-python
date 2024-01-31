@@ -33,6 +33,17 @@ async def get_overall_statistic(
     toDate: date = input_time_frame.toDate,
     db=Depends(get_db),
 ):
+    """
+    Retrieve the overall statistic within a specified time frame.
+
+    Args:
+        fromDate (date): The start date of the time frame.
+        toDate (date): The end date of the time frame.
+        db: The database dependency.
+
+    Returns:
+        ApiResponse[OverallStatistic]: The API response containing the overall statistic.
+    """
     cache_key = f"overall_statistic_{fromDate}_{toDate}"
     cached_statistic = await get_redis_cache(cache_key)
 
