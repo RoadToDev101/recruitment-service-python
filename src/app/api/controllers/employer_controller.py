@@ -12,6 +12,7 @@ from app.common.custom_exception import (
 )
 from app.utils.utils import remove_private_attributes
 from app.common.pagination import Pagination
+from app.config.logging.logging_config import c_logger
 
 
 class EmployerController:
@@ -68,7 +69,7 @@ class EmployerController:
             )
 
         if not db_employer:
-            raise NotFoundException(detail="Employer not found")
+            raise NotFoundException("Employer not found")
 
         try:
             employer_dict = remove_private_attributes(db_employer)
@@ -119,16 +120,15 @@ class EmployerController:
     def update_employer_by_id(
         db: Session, employer_id: int, employer: EmployerUpdate
     ) -> str:
+        db_employer = db.query(EmployerModel).get(employer_id)
+        if not db_employer:
+            raise NotFoundException("Employer not found")
+
         try:
-            db_employer = db.query(EmployerModel).get(employer_id)
-
-            if not db_employer:
-                raise NotFoundException(detail="Employer not found")
-
             db_employer.name = employer.name
             db_employer.province = employer.provinceId
             db_employer.description = employer.description
-
+            c_logger.debug(f"Employer with id {employer_id} updated successfully")
             db.commit()
             db.refresh(db_employer)
         except IntegrityError:
