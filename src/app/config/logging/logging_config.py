@@ -39,12 +39,12 @@ LOGGING = {
             "handlers": ["file"],  # Use the "file" handler for the root logger
             "level": "WARNING",  # Only log messages with WARNING level or higher
         },
-        "controller": {  # Logger configuration for the "controller" module
+        "debugger": {  # Logger configuration for the "debugger" module
             "handlers": [
                 "console",
                 "file",
                 "error_file",
-            ],  # Use "console", "file" and "error_file" handlers for the "controller" logger
+            ],  # Use "console", "file" and "error_file" handlers for the "debugger" logger
             "level": "DEBUG",  # Log messages with DEBUG level or higher
         },
     },
@@ -53,4 +53,4 @@ LOGGING = {
 logging.config.dictConfig(LOGGING)
 
 g_logger = logging.getLogger("uvicorn")
-c_logger = logging.getLogger("controller")
+db_logger = logging.getLogger("debugger")
