@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr, Field
+# from pydantic import EmailStr
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
 from app.api.models.user_model import UserRole
@@ -6,7 +7,7 @@ from app.api.models.user_model import UserRole
 
 class UserBase(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
-    email: EmailStr = Field(..., max_length=254)
+    # email: EmailStr = Field(..., max_length=254)
 
 
 class UserCreate(UserBase):
@@ -15,7 +16,7 @@ class UserCreate(UserBase):
 
 class UserUpdate(UserBase):
     username: Optional[str] = Field(min_length=3, max_length=50)
-    email: Optional[EmailStr] = Field(max_length=254)
+    # email: Optional[EmailStr] = Field(max_length=254)
     role: Optional[UserRole]
 
 

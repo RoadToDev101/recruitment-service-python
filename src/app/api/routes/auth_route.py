@@ -3,7 +3,7 @@ from typing import Annotated
 from dotenv import load_dotenv
 from app.utils.jwt import create_access_token
 from datetime import timedelta
-from fastapi import APIRouter, Depends, status, Request
+from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.dependencies import get_db
@@ -21,7 +21,11 @@ router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])
     status_code=status.HTTP_201_CREATED,
     response_model=TokenResponse,
 )
-async def register(user: UserCreate, db: Session = Depends(get_db)):
+async def register(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: Session = Depends(get_db),
+):
+    user = UserCreate(username=form_data.username, password=form_data.password)
     new_user = UserController.create_user(db, user=user)
 
     expires_delta = timedelta(days=float(os.getenv("JWT_LIFETIME_DAYS")))

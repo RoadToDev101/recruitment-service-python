@@ -56,7 +56,7 @@ class UserController:
         # Create the user
         new_user = UserModel(
             username=user.username,
-            email=user.email,
+            # email=user.email,
             hashed_password=hashed_password,
         )
 
@@ -122,8 +122,8 @@ class UserController:
             # Update the user attributes
             if user.username:
                 db_user.username = user.username
-            if user.email:
-                db_user.email = user.email
+            # if user.email:
+            #     db_user.email = user.email
             if user.role and (db_user.role != "user"):
                 db_user.role = user.role
 

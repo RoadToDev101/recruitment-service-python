@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from app.dependencies import get_db
 from app.api.controllers.user_controller import UserController
 from app.api.schemas.user_schema import UserUpdate, UserOut
-from app.api.models.user_model import User as UserModel
 from app.common.pagination import Pagination
 from app.dependencies import get_current_user, get_current_admin
 from app.common.api_response import ApiResponse
