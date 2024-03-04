@@ -12,4 +12,4 @@ redis
 pytest
 python-json-logger
 black
-py-grpc-prometheus
+prometheus-fastapi-instrumentator

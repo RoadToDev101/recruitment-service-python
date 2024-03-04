@@ -15,10 +15,12 @@ from app.middleware.exception_handling_middleware import (
     exception_handler,
 )
 from app.common.custom_exception import ApiException
+from prometheus_fastapi_instrumentator import Instrumentator
 
 
 # Create a FastAPI app
 app = FastAPI(title="Recruitment Service", version="0.0.1")
+Instrumentator().instrument(app).expose(app)
 
 # Set up CORS middleware
 app.add_middleware(
