@@ -8,6 +8,8 @@ python-jose[cryptography]
 passlib[bcrypt]
 python-dotenv
 httpx
+redis
 pytest
 python-json-logger
 black
+py-grpc-prometheus

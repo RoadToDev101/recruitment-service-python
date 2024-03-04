@@ -12,8 +12,8 @@ load_dotenv()
 DATASOURCE_USER = os.getenv("MYSQL_USER")
 DATASOURCE_PASSWORD = urllib.parse.quote_plus(os.getenv("MYSQL_PASSWORD"))
 DATASOURCE_DB = os.getenv("MYSQL_DATABASE")
-DATASOURCE_HOST = os.getenv("MYSQL_HOST")
-DATASOURCE_PORT = os.getenv("MYSQL_PORT")
+DATASOURCE_HOST = os.getenv("MYSQL_HOST", "localhost")
+DATASOURCE_PORT = os.getenv("MYSQL_PORT", 3306)
 
 DB_URL = f"mysql+mysqlconnector://{DATASOURCE_USER}:{DATASOURCE_PASSWORD}@{DATASOURCE_HOST}:{DATASOURCE_PORT}/{DATASOURCE_DB}"
 try:

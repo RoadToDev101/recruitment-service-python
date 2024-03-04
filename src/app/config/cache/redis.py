@@ -7,8 +7,9 @@ load_dotenv()
 
 # Set up Redis client
 redis_client = redis.Redis(
-    host=os.getenv("REDIS_HOST"),
-    port=os.getenv("REDIS_PORT"),
+    host=os.getenv("REDIS_HOST", "localhost"),
+    port=os.getenv("REDIS_PORT", 6379),
+    password=os.getenv("REDIS_PASSWORD"),
     db=0,
     decode_responses=True,
 )
