@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 import os
 from dotenv import load_dotenv
-from app.common.custom_exception import CredentialsException
+from src.app.common.custom_exception import CredentialsException
 
 load_dotenv()
 

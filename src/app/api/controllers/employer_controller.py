@@ -1,18 +1,18 @@
-from app.api.models.employer_model import (
+from src.app.api.models.employer_model import (
     Employer as EmployerModel,
 )
-from app.api.schemas.employer_schema import EmployerCreate, EmployerUpdate, EmployerOut
+from src.app.api.schemas.employer_schema import EmployerCreate, EmployerUpdate, EmployerOut
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from app.api.models.province_model import Province as ProvinceModel
-from app.common.custom_exception import (
+from src.app.api.models.province_model import Province as ProvinceModel
+from src.app.common.custom_exception import (
     NotFoundException,
     BadRequestException,
     ValidationException,
 )
-from app.utils.utils import remove_private_attributes
-from app.common.pagination import Pagination
-from app.config.logging.logging_config import db_logger
+from src.app.utils.utils import remove_private_attributes
+from src.app.common.pagination import Pagination
+from src.app.config.logging.logging_config import logger
 
 
 class EmployerController:
@@ -51,7 +51,7 @@ class EmployerController:
         except ValidationException as e:
             raise BadRequestException(f"Error validating employer data. Error: {e}")
         except Exception as e:
-            db_logger.error(f"Error creating employer. Input: {employer}. Error: {e}")
+            logger.error(f"Error creating employer. Input: {employer}. Error: {e}")
             raise BadRequestException(f"Error creating employer. Error: {e}")
 
         return "Employer created successfully"
@@ -86,7 +86,7 @@ class EmployerController:
         except ValidationException as e:
             raise BadRequestException(f"Error validating employer data. Error: {e}")
         except Exception as e:
-            db_logger.error(f"Error getting employer. Input: {employer_id}. Error: {e}")
+            logger.error(f"Error getting employer. Input: {employer_id}. Error: {e}")
             raise BadRequestException(f"Error getting employer. Error: {e}")
         return employer_out
 
@@ -119,7 +119,7 @@ class EmployerController:
         except ValidationException as e:
             raise BadRequestException(f"Error validating employer data. Error: {e}")
         except Exception as e:
-            db_logger.error(f"Error getting employers. Error: {e}")
+            logger.error(f"Error getting employers. Error: {e}")
             raise BadRequestException(f"Error getting employers. Error: {e}")
 
         return result
@@ -147,7 +147,7 @@ class EmployerController:
         except ValidationException as e:
             raise BadRequestException(f"Error validating employer data. Error: {e}")
         except Exception as e:
-            db_logger.error(
+            logger.error(
                 f"Error updating employer. Input: {employer_id}. Error: {e}"
             )
             raise BadRequestException(f"Error updating employer. Error: {e}")
@@ -168,7 +168,7 @@ class EmployerController:
                 f"Database error while deleting employer. Error: {e}"
             )
         except Exception as e:
-            db_logger.error(
+            logger.error(
                 f"Error deleting employer. Input: {employer_id}. Error: {e}"
             )
             raise BadRequestException(f"Error deleting employer. Error: {e}")

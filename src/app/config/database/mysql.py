@@ -1,4 +1,4 @@
-from app.config.logging.logging_config import g_logger
+from src.app.config.logging.logging_config import logger
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
@@ -25,14 +25,14 @@ try:
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     # Try to connect to the database
     connection = engine.connect()
-    g_logger.info(f"Connected to MySQL server on port {DATASOURCE_PORT}")
+    logger.info(f"Connected to MySQL server on port {DATASOURCE_PORT}")
     connection.close()
 except Exception as e:
-    g_logger.error("Error connecting to database: ", exc_info=True)
+    logger.error("Error connecting to database: ", exc_info=True)
     exit(1)
 
 Base = declarative_base()
 
-from app.api.models.user_model import User
+from src.app.api.models.user_model import User
 
 Base.metadata.create_all(bind=engine)

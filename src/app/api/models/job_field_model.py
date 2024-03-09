@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from app.config.database.mysql import Base
+from src.app.config.database.mysql import Base
 
 
 class JobField(Base):

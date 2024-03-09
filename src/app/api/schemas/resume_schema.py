@@ -1,5 +1,5 @@
-from app.api.schemas.province_schema import ProvinceBase
-from app.api.schemas.job_field_schema import FieldBase
+from src.app.api.schemas.province_schema import ProvinceBase
+from src.app.api.schemas.job_field_schema import FieldBase
 from pydantic import BaseModel, Field
 from typing import List, Optional
 

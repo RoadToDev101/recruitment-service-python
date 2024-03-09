@@ -1,6 +1,8 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import (
+from prometheus_fastapi_instrumentator import Instrumentator
+from src.app.api.routes import (
     employer_route,
     job_route,
     seeker_route,
@@ -9,14 +11,14 @@ from app.api.routes import (
     user_route,
     auth_route,
 )
-import os
-from app.middleware.exception_handling_middleware import (
+from src.app.middleware.exception_handling_middleware import (
     api_exception_handler,
     exception_handler,
 )
-from app.common.custom_exception import ApiException
-from prometheus_fastapi_instrumentator import Instrumentator
+from src.app.common.custom_exception import ApiException
+from src.app.config.logging.logging_config import logger
 
+PORT = os.getenv("PORT", 8000)
 
 # Create a FastAPI app
 app = FastAPI(title="Recruitment Service", version="0.0.1")
@@ -45,3 +47,5 @@ app.include_router(resume_route.router)
 app.include_router(analytic_route.router)
 app.include_router(user_route.router)
 app.include_router(auth_route.router)
+
+logger.info(f"FASTAPI server is running on http://localhost:{PORT}")

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from app.api.models.user_model import UserRole
+from src.app.api.models.user_model import UserRole
 
 
 class Token(BaseModel):

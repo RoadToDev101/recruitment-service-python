@@ -2,18 +2,18 @@ from typing import List
 from passlib.context import CryptContext
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
-from app.api.schemas.user_schema import UserCreate, UserUpdate, UserOut
-from app.api.models.user_model import User as UserModel
-from app.utils.jwt import create_access_token
+from src.app.api.schemas.user_schema import UserCreate, UserUpdate, UserOut
+from src.app.api.models.user_model import User as UserModel
+from src.app.utils.jwt import create_access_token
 import logging
-from app.utils.utils import remove_private_attributes
-from app.common.custom_exception import (
+from src.app.utils.utils import remove_private_attributes
+from src.app.common.custom_exception import (
     CredentialsException,
     NotFoundException,
     BadRequestException,
 )
-from app.api.schemas.access_token_schema import Payload
-from app.common.pagination import Pagination
+from src.app.api.schemas.access_token_schema import Payload
+from src.app.common.pagination import Pagination
 
 
 logging.getLogger("passlib").setLevel(logging.ERROR)

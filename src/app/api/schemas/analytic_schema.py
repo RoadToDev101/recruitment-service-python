@@ -1,8 +1,8 @@
 from pydantic import BaseModel, Field
 from typing import List
 from datetime import date
-from app.api.schemas.job_schema import JobOut
-from app.api.schemas.seeker_schema import SeekerOut
+from src.app.api.schemas.job_schema import JobOut
+from src.app.api.schemas.seeker_schema import SeekerOut
 
 
 class InputTimeFrame(BaseModel):

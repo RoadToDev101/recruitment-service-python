@@ -1,10 +1,12 @@
-import logging
+import os
 import logging.config
-from pythonjsonlogger import jsonlogger
+
+if not os.path.exists("log"):
+    os.makedirs("log")
 
 LOGGING = {
-    "version": 1,  # Specify the version of the logging configuration
-    "disable_existing_loggers": False,  # Keep existing loggers active
+    "version": 1,
+    "disable_existing_loggers": False,
     "formatters": {
         "json": {
             "format": "%(asctime)s %(levelname)s %(name)s %(message)s",
@@ -13,44 +15,54 @@ LOGGING = {
         "simple": {
             "format": "%(asctime)s - %(levelname)s: %(message)s",
         },
+        "color_simple": {
+            "format": "%(log_color)s%(asctime)s - %(levelname)s: %(message)s",
+            "class": "colorlog.ColoredFormatter",
+            "log_colors": {
+                "DEBUG": "cyan",
+                "INFO": "green",
+                "WARNING": "yellow",
+                "ERROR": "red",
+                "CRITICAL": "red,bg_white",
+            },
+        },
     },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
-            "formatter": "simple",
+            "formatter": "color_simple",
         },
         "file": {
-            "class": "logging.handlers.TimedRotatingFileHandler",  # Use a rotating file handler that creates a new log file at midnight
-            "filename": "log/application.log",  # Specify the file name and path for the log file
-            "when": "midnight",  # Rotate the log file at midnight
-            "interval": 1,  # Rotate the log file every day
-            "backupCount": 7,  # Keep up to 7 backup log files
-            "formatter": "json",  # Use the "json" formatter defined above
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": "log/runtime.log",
+            "when": "midnight",
+            "interval": 1,
+            "backupCount": 7,
+            "formatter": "json",
         },
         "error_file": {
-            "class": "logging.FileHandler",  # Use a file handler for error logs
-            "filename": "log/error.log",  # Specify the file name and path for the error log file
-            "level": "ERROR",  # Only log messages with ERROR level or higher
-            "formatter": "json",  # Use the "json" formatter defined above
+            "class": "logging.FileHandler",
+            "filename": "log/error.log",
+            "level": "ERROR",
+            "formatter": "json",
         },
     },
     "loggers": {
-        "": {  # Root logger configuration
-            "handlers": ["file"],  # Use the "file" handler for the root logger
-            "level": "WARNING",  # Only log messages with WARNING level or higher
+        "": {
+            "handlers": ["file"],
+            "level": "WARNING",
         },
-        "debugger": {  # Logger configuration for the "debugger" module
+        "debugger": {
             "handlers": [
                 "console",
                 "file",
                 "error_file",
-            ],  # Use "console", "file" and "error_file" handlers for the "debugger" logger
-            "level": "DEBUG",  # Log messages with DEBUG level or higher
+            ],
+            "level": "DEBUG",
         },
     },
 }
 
 logging.config.dictConfig(LOGGING)
 
-g_logger = logging.getLogger("uvicorn")
-db_logger = logging.getLogger("debugger")
+logger = logging.getLogger("debugger")

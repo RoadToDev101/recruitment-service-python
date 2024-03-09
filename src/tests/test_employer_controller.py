@@ -1,14 +1,14 @@
 import pytest
 from unittest.mock import MagicMock
 from sqlalchemy.orm import Session
-from app.api.controllers.employer_controller import (
+from src.app.api.controllers.employer_controller import (
     EmployerController,
     EmployerCreate,
     EmployerUpdate,
 )
-from app.api.models.employer_model import Employer as EmployerModel
-from app.api.models.province_model import Province as ProvinceModel
-from app.common.custom_exception import (
+from src.app.api.models.employer_model import Employer as EmployerModel
+from src.app.api.models.province_model import Province as ProvinceModel
+from src.app.common.custom_exception import (
     BadRequestException,
     NotFoundException,
     ValidationException,

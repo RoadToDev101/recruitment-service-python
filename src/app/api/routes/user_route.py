@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
-from app.dependencies import get_db
-from app.api.controllers.user_controller import UserController
-from app.api.schemas.user_schema import UserUpdate, UserOut
-from app.common.pagination import Pagination
-from app.dependencies import get_current_user, get_current_admin
-from app.common.api_response import ApiResponse
-from app.common.custom_exception import ForbiddenException
+from src.app.dependencies import get_db
+from src.app.api.controllers.user_controller import UserController
+from src.app.api.schemas.user_schema import UserUpdate, UserOut
+from src.app.common.pagination import Pagination
+from src.app.dependencies import get_current_user, get_current_admin
+from src.app.common.api_response import ApiResponse
+from src.app.common.custom_exception import ForbiddenException
 
 router = APIRouter(
     prefix="/api/v1/users", tags=["Users"], dependencies=[Depends(get_current_user)]

@@ -1,17 +1,17 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from app.api.models.job_model import Job as JobModel
-from app.api.schemas.job_schema import JobCreate, JobOut, JobUpdate
-from app.api.models.employer_model import Employer as EmployerModel
-from app.api.models.job_field_model import JobField as JobFieldModel
-from app.api.models.province_model import Province as ProvinceModel
-from app.common.custom_exception import (
+from src.app.api.models.job_model import Job as JobModel
+from src.app.api.schemas.job_schema import JobCreate, JobOut, JobUpdate
+from src.app.api.models.employer_model import Employer as EmployerModel
+from src.app.api.models.job_field_model import JobField as JobFieldModel
+from src.app.api.models.province_model import Province as ProvinceModel
+from src.app.common.custom_exception import (
     NotFoundException,
     BadRequestException,
     ValidationException,
 )
-from app.common.pagination import Pagination
-from app.utils.utils import (
+from src.app.common.pagination import Pagination
+from src.app.utils.utils import (
     remove_private_attributes,
     extract_ids,
     format_str_ids,

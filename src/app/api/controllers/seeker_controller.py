@@ -1,12 +1,12 @@
-from app.api.models.seeker_model import Seeker as SeekerModel
-from app.api.schemas.seeker_schema import SeekerCreate, SeekerOut, SeekerUpdate
-from app.api.models.province_model import Province as ProvinceModel
+from src.app.api.models.seeker_model import Seeker as SeekerModel
+from src.app.api.schemas.seeker_schema import SeekerCreate, SeekerOut, SeekerUpdate
+from src.app.api.models.province_model import Province as ProvinceModel
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from app.common.custom_exception import BadRequestException, NotFoundException
+from src.app.common.custom_exception import BadRequestException, NotFoundException
 from pydantic import ValidationError
-from app.utils.utils import remove_private_attributes
-from app.common.pagination import Pagination
+from src.app.utils.utils import remove_private_attributes
+from src.app.common.pagination import Pagination
 
 
 class SeekerController:

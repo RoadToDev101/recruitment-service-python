@@ -1,17 +1,17 @@
-from app.common.api_response import ApiResponse
-from app.common.pagination import Pagination
-from app.dependencies import get_db
-from app.api.controllers.analytic_controller import AnalyticController
-from app.api.schemas.analytic_schema import (
+from src.app.common.api_response import ApiResponse
+from src.app.common.pagination import Pagination
+from src.app.dependencies import get_db
+from src.app.api.controllers.analytic_controller import AnalyticController
+from src.app.api.schemas.analytic_schema import (
     InputTimeFrame,
     OverallStatistic,
     SuitableSeekers,
 )
 from fastapi import APIRouter, Depends, Query, status
 from datetime import date
-from app.config.cache.redis import get_redis_cache, set_redis_cache
+from src.app.config.cache.redis import get_redis_cache, set_redis_cache
 import json
-from app.dependencies import get_current_admin
+from src.app.dependencies import get_current_admin
 
 
 router = APIRouter(

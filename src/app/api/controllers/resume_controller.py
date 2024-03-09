@@ -1,15 +1,15 @@
-from app.api.models.resume_model import Resume as ResumeModel
-from app.api.schemas.resume_schema import ResumeCreate, ResumeOut, ResumeUpdate
-from app.api.models.seeker_model import Seeker as SeekerModel
-from app.api.models.job_field_model import JobField as JobFieldModel
-from app.api.models.province_model import Province as ProvinceModel
-from app.common.custom_exception import (
+from src.app.api.models.resume_model import Resume as ResumeModel
+from src.app.api.schemas.resume_schema import ResumeCreate, ResumeOut, ResumeUpdate
+from src.app.api.models.seeker_model import Seeker as SeekerModel
+from src.app.api.models.job_field_model import JobField as JobFieldModel
+from src.app.api.models.province_model import Province as ProvinceModel
+from src.app.common.custom_exception import (
     NotFoundException,
     BadRequestException,
     ValidationException,
 )
-from app.common.pagination import Pagination
-from app.utils.utils import (
+from src.app.common.pagination import Pagination
+from src.app.utils.utils import (
     remove_private_attributes,
     extract_ids,
     format_str_ids,

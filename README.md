@@ -16,7 +16,7 @@ This is a recruitment service implemented in Python.
 git clone
 
 # Change directory
-cd recruitment-service-python/src
+cd recruitment-service-python
 
 # Create virtual environment
 python3 -m venv venv
@@ -31,13 +31,11 @@ pip install -r requirements.txt
 ## Running the tests
 
 ```bash
-cd recruitment-service-python/src
 pytest
 ```
 
 ## Deployment
 
 ```bash
-cd recruitment-service-python
-docker-compose up
+docker compose up -d
 ```

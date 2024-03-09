@@ -6,7 +6,7 @@ from sqlalchemy import (
     String,
     DateTime,
 )
-from app.config.database.mysql import Base
+from src.app.config.database.mysql import Base
 from enum import Enum as PyEnum
 
 

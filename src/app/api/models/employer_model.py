@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, BigInteger, String, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
-from app.config.database.mysql import Base
+from src.app.config.database.mysql import Base
 
 
 class Employer(Base):
