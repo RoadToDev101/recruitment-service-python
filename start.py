@@ -1,5 +1,5 @@
-import uvicorn
 import os
+import uvicorn
 from dotenv import load_dotenv
 
 load_dotenv()

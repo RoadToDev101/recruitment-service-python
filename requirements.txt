@@ -13,5 +13,6 @@ pytest
 python-json-logger
 black
 prometheus-fastapi-instrumentator
+apitally[fastapi]
 colorlog
 pymongo
