@@ -38,6 +38,10 @@ app.add_middleware(
 app.exception_handler(ApiException)(api_exception_handler)
 app.exception_handler(Exception)(exception_handler)
 
+# Root endpoint
+@app.get("/")
+async def root():
+    return {"message": "Welcome to the Recruitment Service!"}
 
 # Include routers from the routes module
 app.include_router(employer_route.router)
@@ -48,4 +52,4 @@ app.include_router(analytic_route.router)
 app.include_router(user_route.router)
 app.include_router(auth_route.router)
 
-logger.info(f"FASTAPI server is running on http://localhost:{PORT}")
+logger.info(f"FastApi server is running on http://127.0.0.1:{PORT}")

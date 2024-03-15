@@ -1,4 +1,4 @@
-from src.app.config.database.mysql import SessionLocal
+from src.app.config.database.mysql import MySQL
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends
 from sqlalchemy.orm import Session
@@ -12,8 +12,9 @@ from src.app.api.models.user_model import UserRole
 from src.app.api.controllers.user_controller import UserController
 
 
+
 def get_db():
-    db = SessionLocal()
+    db = MySQL().SessionLocal()
     try:
         yield db
     finally:
