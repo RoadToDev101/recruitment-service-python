@@ -1,23 +1,21 @@
+import json
+from fastapi import APIRouter, Depends, Query, status
+from datetime import date
 from src.app.common.api_response import ApiResponse
-from src.app.common.pagination import Pagination
-from src.app.dependencies import get_db
 from src.app.api.controllers.analytic_controller import AnalyticController
 from src.app.api.schemas.analytic_schema import (
     InputTimeFrame,
     OverallStatistic,
     SuitableSeekers,
 )
-from fastapi import APIRouter, Depends, Query, status
-from datetime import date
 from src.app.config.cache.redis import get_redis_cache, set_redis_cache
-import json
-from src.app.dependencies import get_current_admin
+from src.app.dependencies import get_current_admin, identify_consumer, get_db
 
 
 router = APIRouter(
     prefix="/api/v1/analytic",
     tags=["Analytic"],
-    dependencies=[Depends(get_current_admin)],
+    dependencies=[Depends(get_current_admin), Depends(identify_consumer)],
 )
 
 input_time_frame = InputTimeFrame(fromDate=date(2022, 1, 1), toDate=date(2022, 12, 31))

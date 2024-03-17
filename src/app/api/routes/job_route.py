@@ -1,17 +1,16 @@
 from fastapi import APIRouter, Depends, status, Query
+import json
 from src.app.api.controllers.job_controller import JobController
 from src.app.api.schemas.job_schema import JobCreate, JobOut, JobUpdate
 from src.app.common.api_response import ApiResponse
 from src.app.common.pagination import Pagination
-from src.app.dependencies import get_db
+from src.app.dependencies import get_db, get_current_user, identify_consumer
 from src.app.config.cache.redis import get_redis_cache, set_redis_cache
-import json
-from src.app.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/api/v1/jobs",
     tags=["Jobs"],
-    dependencies=[Depends(get_current_user)],
+    dependencies=[Depends(get_current_user), Depends(identify_consumer)],
 )
 
 

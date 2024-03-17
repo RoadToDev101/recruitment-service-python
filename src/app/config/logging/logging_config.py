@@ -59,6 +59,7 @@ LOGGING = {
                 "error_file",
             ],
             "level": "DEBUG",
+            "propagate": False,
         },
     },
 }

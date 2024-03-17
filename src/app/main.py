@@ -12,11 +12,8 @@ from src.app.api.routes import (
     user_route,
     auth_route,
 )
-from src.app.middleware.exception_handling_middleware import (
-    api_exception_handler,
-    exception_handler,
-)
-from src.app.common.custom_exception import ApiException
+from src.app.middleware.api_logging import api_logging_middleware
+from src.app.middleware.exception import unified_exception_middleware
 from src.app.config.logging.logging_config import logger
 
 PORT = os.getenv("PORT", 8000)
@@ -39,10 +36,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 # Set up error handling middleware
-app.exception_handler(ApiException)(api_exception_handler)
-app.exception_handler(Exception)(exception_handler)
+app.middleware("http")(unified_exception_middleware)
+app.middleware("http")(api_logging_middleware)
 
 
 # Root endpoint

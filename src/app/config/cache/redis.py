@@ -5,11 +5,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+host = os.getenv("REDIS_HOST", "localhost")
+port = os.getenv("REDIS_PORT", 6379)
+password = os.getenv("REDIS_PASSWORD")
+
 # Set up Redis client
 redis_client = redis.Redis(
-    host=os.getenv("REDIS_HOST", "localhost"),
-    port=os.getenv("REDIS_PORT", 6379),
-    password=os.getenv("REDIS_PASSWORD"),
+    host=host,
+    port=port,
+    password=password,
     db=0,
     decode_responses=True,
 )
@@ -17,7 +21,7 @@ redis_client = redis.Redis(
 # Check connection
 try:
     if redis_client.ping():
-        logger.info(f'Connected to Redis server on port {os.getenv("REDIS_PORT")}')
+        logger.info(f"Connected to Redis server at {host} on port {port}")
 except redis.ConnectionError:
     logger.error("Error connecting to Redis server: ", exc_info=True)
     exit(1)

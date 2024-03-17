@@ -1,20 +1,20 @@
+import os
+import urllib
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.app.config.database.base import Base
-import os
-from dotenv import load_dotenv
-import urllib
+from src.app.config.database.base_mysql import Base
 from src.app.config.logging.logging_config import logger
 
 load_dotenv()
 
 
-class MySQL:
+class MySQLConnection:
     _instance = None
 
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(MySQL, cls).__new__(cls)
+            cls._instance = super(MySQLConnection, cls).__new__(cls)
             cls._instance._initialized = False
         return cls._instance
 
@@ -23,16 +23,16 @@ class MySQL:
             return
         self._initialized = True
 
-        DATASOURCE_USER = os.getenv("MYSQL_USER")
-        DATASOURCE_PASSWORD = urllib.parse.quote_plus(os.getenv("MYSQL_PASSWORD"))
-        DATASOURCE_DB = os.getenv("MYSQL_DATABASE")
-        DATASOURCE_HOST = os.getenv("MYSQL_HOST", "localhost")
-        DATASOURCE_PORT = os.getenv("MYSQL_PORT", 3306)
-        DB_URL = f"mysql+mysqlconnector://{DATASOURCE_USER}:{DATASOURCE_PASSWORD}@{DATASOURCE_HOST}:{DATASOURCE_PORT}/{DATASOURCE_DB}"
+        host = os.getenv("MYSQL_HOST", "localhost")
+        user = os.getenv("MYSQL_USER")
+        password = urllib.parse.quote_plus(os.getenv("MYSQL_PASSWORD"))
+        db_name = os.getenv("MYSQL_DATABASE")
+        port = os.getenv("MYSQL_PORT", 3306)
+        DB_URL = f"mysql+mysqlconnector://{user}:{password}@{host}:{port}/{db_name}"
 
         try:
             self.engine = create_engine(
-                DB_URL,
+                url=DB_URL,
                 pool_pre_ping=True,
                 echo=os.getenv("ENV") == "Development",
             )
@@ -41,10 +41,10 @@ class MySQL:
             )
             # Try to connect to the database
             connection = self.engine.connect()
-            logger.info(f"Connected to MySQL server on port {DATASOURCE_PORT}")
+            logger.info(f"Connected to MySQL server at {host} on port {port}")
             connection.close()
-        except Exception as e:
-            logger.error("Error connecting to database: ", exc_info=True)
+        except Exception:
+            logger.error("Error connecting to MySQL server: ", exc_info=True)
             exit(1)
 
         from src.app.api.models.user_model import User
@@ -53,4 +53,4 @@ class MySQL:
 
 
 # Usage
-db = MySQL()
+db = MySQLConnection()

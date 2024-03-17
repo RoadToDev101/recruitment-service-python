@@ -1,17 +1,16 @@
+import json
 from fastapi import APIRouter, Depends, status, Query
 from src.app.api.controllers.seeker_controller import SeekerController
 from src.app.api.schemas.seeker_schema import SeekerCreate, SeekerOut, SeekerUpdate
 from src.app.common.api_response import ApiResponse
 from src.app.common.pagination import Pagination
-from src.app.dependencies import get_db
+from src.app.dependencies import get_db, get_current_user, identify_consumer
 from src.app.config.cache.redis import get_redis_cache, set_redis_cache
-import json
-from src.app.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/api/v1/seekers",
     tags=["Seekers"],
-    dependencies=[Depends(get_current_user)],
+    dependencies=[Depends(get_current_user), Depends(identify_consumer)],
 )
 
 

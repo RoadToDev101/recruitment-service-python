@@ -1,3 +1,5 @@
+import json
+from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, status, Query
 from src.app.api.controllers.employer_controller import EmployerController
 from src.app.api.schemas.employer_schema import (
@@ -7,16 +9,13 @@ from src.app.api.schemas.employer_schema import (
 )
 from src.app.common.api_response import ApiResponse
 from src.app.common.pagination import Pagination
-from src.app.dependencies import get_db
+from src.app.dependencies import get_db, get_current_user, identify_consumer
 from src.app.config.cache.redis import get_redis_cache, set_redis_cache
-import json
-from sqlalchemy.orm import Session
-from src.app.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/api/v1/employers",
     tags=["Employers"],
-    dependencies=[Depends(get_current_user)],
+    dependencies=[Depends(get_current_user), Depends(identify_consumer)],
 )
 
 

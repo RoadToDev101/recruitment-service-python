@@ -1,11 +1,11 @@
 import os
-from typing import Annotated
 from dotenv import load_dotenv
-from src.app.utils.jwt import create_access_token
-from datetime import timedelta
+from typing import Annotated
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
+from datetime import timedelta
 from sqlalchemy.orm import Session
+from src.app.utils.jwt import create_access_token
 from src.app.dependencies import get_db
 from src.app.api.controllers.user_controller import UserController
 from src.app.api.schemas.user_schema import UserCreate

@@ -1,9 +1,9 @@
-from fastapi import Depends, Request, FastAPI
+from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from jose import JWTError
 from typing import Annotated
-from src.app.config.database.mysql import MySQL
+from src.app.config.database.mysql import MySQLConnection
 from src.app.api.controllers.user_controller import UserController
 from src.app.utils.jwt import decode_access_token
 from src.app.api.schemas.user_schema import UserOut, UserBase
@@ -12,7 +12,7 @@ from src.app.common.custom_exception import CredentialsException, ForbiddenExcep
 
 
 def get_db():
-    db = MySQL().SessionLocal()
+    db = MySQLConnection().SessionLocal()
     try:
         yield db
     finally:
@@ -43,7 +43,7 @@ async def get_current_user(
 def identify_consumer(
     request: Request, current_user: Annotated[UserBase, Depends(get_current_user)]
 ):
-    request.state.consumer_identifier = current_user.username
+    request.state.consumer_identifier = current_user.id
 
 
 async def get_current_admin(
@@ -52,6 +52,3 @@ async def get_current_admin(
     if current_user.role != UserRole.ADMIN:
         raise ForbiddenException()
     return current_user
-
-
-app = FastAPI(dependencies=[Depends(identify_consumer)])
