@@ -9,12 +9,11 @@ This is a recruitment service implemented in Python.
 - Python 3.9.0
 - Docker
 
-### Installing
+### Install dependencies
+
+For Linux and macOS:
 
 ```bash
-# Clone the repository
-git clone
-
 # Change directory
 cd recruitment-service-python
 
@@ -28,13 +27,33 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Running the tests
+For Windows:
+
+```bash
+# Change directory
+cd recruitment-service-python
+
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### Set environment variables
+
+Copy the .env.example file to .env and set the environment variables.
+
+## Run tests
 
 ```bash
 pytest
 ```
 
-## Deployment
+## Start the application
 
 ```bash
 docker compose up -d

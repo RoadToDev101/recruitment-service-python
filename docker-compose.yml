@@ -14,40 +14,40 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      # mongodb:
-      #   condition: service_healthy
+      mongodb:
+        condition: service_started
     links:
       - mysql
       - redis
-      # - mongodb
+      - mongodb
     networks:
       - backend
 
   mysql:
     image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - "${MYSQL_PORT}:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
     volumes:
-    - mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
+      - ./etc/mysql/job_db.sql:/docker-entrypoint-initdb.d/job_db.sql
     restart: on-failure
     networks:
       - backend
-
 
   redis:
     image: redis:latest
     ports:
       - "${REDIS_PORT}:6379"
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-} # default is empty
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -60,31 +60,34 @@ services:
     networks:
       - backend
 
-  # mongodb:
-  #   image: mongo:latest
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
-  #     MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
-  #   ports:
-  #     - "${MONGODB_PORT}:27017"
-  #   healthcheck:
-  #     test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #   volumes:
-  #     - mongodb_data:/data/db
-  #   restart: on-failure
-  #   networks:
-  #     - backend
-
+  mongodb:
+    image: mongo:latest
+    volumes:
+      - mongodb_data:/data/db
+      # - ./etc/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+    #   MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    #   MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
+    #   MONGODB_USERNAME: ${MONGODB_USERNAME}
+    #   MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+    ports:
+      - "${MONGODB_PORT}:27017"
+    # healthcheck:
+    #   test: echo 'db.runCommand("ping").ok' | mongosh mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@localhost:${MONGODB_PORT}/?authSource=${MONGODB_DATABASE} --quiet
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+    restart: on-failure
+    networks:
+      - backend
 
   prometheus:
     image: prom/prometheus:latest
     volumes:
-      - ./etc/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
+      - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
     depends_on:
@@ -104,7 +107,7 @@ services:
 volumes:
   mysql_data:
   redis_data:
-  # mongodb_data:
+  mongodb_data:
   prometheus_data:
     driver: local
     driver_opts:

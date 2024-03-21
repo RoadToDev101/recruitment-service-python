@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 import json
 from time import time
 from fastapi import Request
@@ -5,6 +7,10 @@ from fastapi.responses import JSONResponse
 from pymongo.errors import PyMongoError
 from src.app.config.database.mongodb import mongo_db
 from src.app.config.logging.logging_config import logger
+
+load_dotenv()
+
+MONGODB_DATABASE = os.getenv("MONGODB_DATABASE")
 
 
 async def api_logging_middleware(request: Request, call_next):
@@ -60,16 +66,16 @@ async def api_logging_middleware(request: Request, call_next):
     try:
         if 400 <= log_dict["status_code"] < 500:
             logger.warning(f"Client error occurred", extra=log_dict)
-            mongo_db.client["api_logs"]["client_error_logs"].insert_one(log_dict)
+            mongo_db.client[MONGODB_DATABASE]["client_error_logs"].insert_one(log_dict)
         elif 500 <= log_dict["status_code"]:
             logger.error(f"Server error occurred", extra=log_dict)
-            mongo_db.client["api_logs"]["server_error_logs"].insert_one(log_dict)
+            mongo_db.client[MONGODB_DATABASE]["server_error_logs"].insert_one(log_dict)
         else:
             logger.info(
                 f"{log_dict['method']} {log_dict['path']} {log_dict['status_code']}",
                 extra=log_dict,
             )
-            mongo_db.client["api_logs"]["info_logs"].insert_one(log_dict)
+            mongo_db.client[MONGODB_DATABASE]["info_logs"].insert_one(log_dict)
     except PyMongoError as e:
         logger.error(f"Error inserting log into MongoDB: {e}")
 
