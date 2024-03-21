@@ -13,7 +13,7 @@ from src.app.common.token_response import TokenResponse
 
 load_dotenv()
 
-router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])
+router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 @router.post(

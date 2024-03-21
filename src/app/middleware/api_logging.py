@@ -8,6 +8,11 @@ from src.app.config.logging.logging_config import logger
 
 
 async def api_logging_middleware(request: Request, call_next):
+    # Only log requests to the specified API routes
+    log_routes = ["/api/v1"]
+    if not request.url.path.startswith(tuple(log_routes)):
+        return await call_next(request)
+
     start = time()
 
     # Create log_dict
@@ -17,7 +22,7 @@ async def api_logging_middleware(request: Request, call_next):
         "query_params": dict(request.query_params),
     }
 
-    # Attempt to log request body if needed (for certain paths or methods)
+    # Attempt to log request body
     if request.method in ["POST", "PUT", "PATCH"]:
         try:
             log_dict["request_body"] = await request.json()

@@ -1,4 +1,5 @@
 import os
+import socket
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -16,6 +17,7 @@ from src.app.middleware.api_logging import api_logging_middleware
 from src.app.middleware.exception import unified_exception_middleware
 from src.app.config.logging.logging_config import logger
 
+HOST_NAME = socket.gethostname()
 PORT = os.getenv("PORT", 8000)
 
 # Create a FastAPI app
@@ -56,4 +58,4 @@ app.include_router(analytic_route.router)
 app.include_router(user_route.router)
 app.include_router(auth_route.router)
 
-logger.info(f"FastApi server is running on http://127.0.0.1:{PORT}")
+logger.info(f"FastApi server is running on {HOST_NAME}:{PORT}")
