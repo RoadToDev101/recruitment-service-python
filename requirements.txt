@@ -15,3 +15,4 @@ prometheus-fastapi-instrumentator==6.1.0
 apitally[fastapi]
 colorlog==6.8.2
 pymongo==4.6.2
+sentry-sdk[fastapi]
