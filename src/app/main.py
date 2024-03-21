@@ -67,11 +67,6 @@ async def root():
     return {"message": "Welcome to the Recruitment Service!"}
 
 
-@app.get("/sentry-debug")
-async def trigger_error():
-    division_by_zero = 1 / 0
-
-
 # Include routers from the routes module
 app.include_router(employer_route.router)
 app.include_router(job_route.router)
