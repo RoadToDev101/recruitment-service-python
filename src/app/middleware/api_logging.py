@@ -17,6 +17,7 @@ async def api_logging_middleware(request: Request, call_next):
 
     # Create log_dict
     log_dict = {
+        "timestamp": f"{start:.3f}",
         "method": request.method,
         "path": request.url.path,
         "query_params": dict(request.query_params),
@@ -64,7 +65,10 @@ async def api_logging_middleware(request: Request, call_next):
             logger.error(f"Server error occurred", extra=log_dict)
             mongo_db.client["api_logs"]["server_error_logs"].insert_one(log_dict)
         else:
-            logger.info(f"Request processed", extra=log_dict)
+            logger.info(
+                f"{log_dict['method']} {log_dict['path']} {log_dict['status_code']}",
+                extra=log_dict,
+            )
             mongo_db.client["api_logs"]["info_logs"].insert_one(log_dict)
     except PyMongoError as e:
         logger.error(f"Error inserting log into MongoDB: {e}")
