@@ -5,15 +5,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 from apitally.fastapi import ApitallyMiddleware
-from src.app.api.routes import (
-    employer_route,
-    job_route,
-    seeker_route,
-    resume_route,
-    analytic_route,
-    user_route,
-    auth_route,
-)
+from src.app.api.routes.employer_route import router as employer_route
+from src.app.api.routes.job_route import router as job_route
+from src.app.api.routes.seeker_route import router as seeker_route
+from src.app.api.routes.resume_route import router as resume_route
+from src.app.api.routes.analytic_route import router as analytic_route
+from src.app.api.routes.user_route import router as user_route
+from src.app.api.routes.auth_route import router as auth_route
 from src.app.middleware.api_logging import api_logging_middleware
 from src.app.middleware.exception import unified_exception_middleware
 from src.app.config.logging.logging_config import logger
@@ -68,12 +66,12 @@ async def root():
 
 
 # Include routers from the routes module
-app.include_router(employer_route.router)
-app.include_router(job_route.router)
-app.include_router(seeker_route.router)
-app.include_router(resume_route.router)
-app.include_router(analytic_route.router)
-app.include_router(user_route.router)
-app.include_router(auth_route.router)
+app.include_router(employer_route)
+app.include_router(job_route)
+app.include_router(seeker_route)
+app.include_router(resume_route)
+app.include_router(analytic_route)
+app.include_router(user_route)
+app.include_router(auth_route)
 
 logger.info(f"FastApi server is running on {HOST_NAME}:{PORT}")
